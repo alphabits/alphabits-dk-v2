@@ -1,0 +1,4 @@
+env-aw/*
+*.pyc
+*.swp
+aw/localconfig.py

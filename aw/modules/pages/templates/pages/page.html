@@ -1,0 +1,10 @@
+{#
+vim:filetype=htmljinja
+#}
+{% extends 'layout.html' %}
+{% block content %}
+<h1>{{ page }}</h1>
+{% code 'python' %}
+{{ code }}
+{% endcode %}
+{% endblock %}
