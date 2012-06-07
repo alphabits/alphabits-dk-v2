@@ -1,0 +1,190 @@
+body {
+    font: normal normal normal 15px/1.5 'Neuton', georgia, times, serif;
+}
+
+header {
+    width: 100%;
+    background-color: #f6f6f6;
+    border-bottom: 1px solid #ddd;
+    overflow: hidden;
+    padding: 20px 0 10px 0;
+    margin-bottom: 40px;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.wrapper {
+    width: 908px;
+    margin: 0 auto;
+    overflow: visible;
+    position: relative;
+}
+
+em {
+    font-style: italic;
+}
+
+
+h1 {
+    width: 120px;
+    height: 67px;
+    background: transparent url(../img/logo.png) top right no-repeat;
+    text-indent: -9999px; overflow: hidden;
+    float: left;
+}
+
+h1 a {
+    display: block;
+    height: 67px;
+    margin-left: 31px;
+}
+
+label {
+    float: left;
+    width: 80px;
+    text-align: right;
+    padding-right: 12px;
+}
+
+.form-field {
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+
+nav {
+    float: left;
+    width: 628px;
+    margin-left: 20px;
+}
+
+nav .active {
+    color: #555;
+    text-decoration: underline;
+}
+
+header nav {
+    color: #ccc;
+}
+
+header a {
+    text-decoration: none;
+}
+
+.content {
+    overflow: hidden;
+}
+
+aside {
+    width: 120px;
+    margin-right: 20px;
+    float: left;
+    min-height: 100px;
+}
+
+.main-content {
+    width: 628px;
+    float: left;
+}
+
+.main-content p {
+    margin-bottom: 8px;
+}
+
+h2 {
+    font: normal normal 2.8em/1.1 'Bigshot One', georgia, times, serif;
+    margin-bottom: 28px;
+    padding-bottom: 8px;
+    border-bottom: 1px dotted #aaa;
+}
+
+h3 {
+    font-style: normal;
+    font-size: 1.8em;
+    line-height: 1.1;
+    font-weight: normal;
+    margin-bottom: 8px;
+}
+
+h4 {
+    font-style: italic;
+    font-weight: normal;
+    margin-bottom: 10px;
+    color: #607890;
+}
+
+article {
+    margin-bottom: 28px;
+}
+
+.codehilite {
+    background-color: #f1f1f1;
+    line-height: 1.3;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    padding-left: 3px;
+    margin: 14px 0;
+    font-size: 14px;
+}
+
+footer {
+    margin: 30px 140px 10px 140px;
+    padding-top: 4px;
+    border-top: 1px dotted #ccc;
+    clear: both;
+    font-size: 12px;
+}
+
+.welcome-message {
+    /*font-size: 24px;*/
+    font-size: 24px;
+}
+
+.welcome-message p {
+    font-style: italic;
+}
+
+input {
+    width: 160px;
+}
+
+input, textarea {
+    border: 1px solid #ddd;
+    background-color: #f6f6f6;
+    font-family: "lucida grande", verdana, arial, helvetica, sans-serif;
+    font-size: 12px;
+    padding: 4px;
+    float: left;
+}
+
+input[type=submit] {
+    width: auto;
+}
+
+textarea {
+    width: 300px;
+    height: 110px;
+}
+
+.error input, .error textarea {
+    border-color: red;
+}
+
+span.error {
+    font-size: 12px;
+    color: red;
+    font-style: italic;
+    display: block;
+    float: left;
+    padding: 4px 6px 0 6px;
+}
+
+.contact-form {
+    margin-top: 20px;
+}
+
+.user-status {
+    position: absolute;
+    top: -30px; right: 140px;
+    font-size: 12px;
+    font-style: italic;
+}
