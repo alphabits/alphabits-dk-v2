@@ -1,0 +1,28 @@
+{# 
+vim:filetype=htmljinja 
+#}
+{% macro get_link(endpoint, text) -%}
+    {% set u = url_for(endpoint, **kwargs) %}
+    {% if request.path == u -%}
+    {% set c = 'active' -%}
+    {% else -%}
+    {% set c = '' -%}
+    {% endif -%}
+    <a href="{{ url_for(endpoint, **kwargs) }}" class="{{ c }}">{{ text }}</a>
+{%- endmacro %}
+
+
+{%- macro render_field(field) -%}
+<div class="form-field{% if field.errors %} error{% endif %}">
+    {{ field.label }}
+    {{ field(**kwargs)|safe }}
+    {% if field.errors %}
+        <span class="error">{{ field.errors[0] }}</span>
+    {% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro menu(br) -%}
+{{ get_link('pages.show_page', 'Alphabits', page="about")}} is my company, where I create websites, web applications and {{br|safe}}do data analysis.
+I prefer to create {{ get_link('pages.show_page', 'simple solutions', page='solutions') }} using open source tools. {{br|safe}}You can read more about my personal thoughts at {{ get_link('blog.index', 'my blog')}}.
+{%- endmacro -%}
