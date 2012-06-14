@@ -1,5 +1,12 @@
 [
     {
+        "id": "updating-amazon-s3-with-php",
+        "title": "Updating Amazon S3 with PHP",
+        "date": "2012-06-15",
+        "author": "Anders Hørsted",
+        "template": "serving-html-from-amazon-s3.html"
+    },
+    {
         "id": "introduction-to-eigenvectors",
         "title": "A short introduction to eigenvectors",
         "date": "2011-05-26",

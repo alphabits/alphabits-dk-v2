@@ -1,0 +1,77 @@
+<p>Recently I needed to implement a banner for a danish car dealer. The
+banner was included in an iframe on the site of a large danish newspaper. The
+number of visitors was high and therefore the banner was implemented as
+a static html-file and served from Amazon S3. The banner needed to show a
+random selected car and this was handled by including data about some of the
+cars as an javascript array in the html source. To keep the shown cars
+up-to-date with the database, the html file needed to be updated once every
+third hour, and this should ofcause be done automatically. Since the web site
+of the car dealer was a wordpress installation on a shared host, I needed to
+rely on the cronjob functionality of wordpress and therefore needed to write
+the update code in PHP.</p>
+
+<p>Using 
+<a href="https://github.com/tpyo/amazon-s3-php-class/blob/master/S3.php">this php class</a>
+
+it turned out to be very easy to update S3. To instantiate the class you need
+the access key, secret key and endpoint for your account. When you have signed 
+up for Amazon S3, the access key and secret key can be found at the 
+<a href="http://aws.amazon.com/">Amazon web services</a>  website on the page 
+"My Account -> Security Credentials" and the endpoint depends on where you choose 
+to place your bucket. A list of endpoints can be found 
+<a href="http://docs.amazonwebservices.com/general/latest/gr/rande.html#s3_region">here</a>.
+To create an instance just write
+</p>
+
+{% code 'php' %}
+$access_key = 'your-access-key';
+$secret_key = 'your-secret-key';
+$use_ssl = false;
+$endpoint = 's3-eu-west-1.amazonaws.com';
+
+$amazon = new S3($access_key, $secret_key, $use_ssl, $endpoint);
+{% endcode %}
+
+<p>
+    To upload some content to S3 you first need the name of the bucket you wish to
+    upload your content to. When the data is given as a string the mime-type of the
+    uploaded content should also be specified. To actually upload the content use
+    the <code>putObject</code> method of the <code>S3</code> class.
+</p>
+
+{% code 'php' %}
+$html = generate_html();
+$bucket = 'ald-jp-banners';
+$input = array('data'=>$html, 'type'=>'text/html');
+
+$amazon->putObject($input, $bucket, 'index.html', S3::ACL_PUBLIC_READ);
+{% endcode %}
+
+<p>Obviously what you pass as the fourth parameter depends on the permissions
+you want to give the uploaded content.</p> 
+
+<p>Even though the Amazon S3 service is very cheap, the banner was going to be
+requested many times, and therefore every byte saved, was money saved. One way to
+minimize the size was to strip all unnecessary white space from the html source.
+Another common way to minimize file sizes for files transported by http is to
+gzip the file on the server and send a Content-Encoding header with the
+file. It turned out that this is also possible with Amazon S3. And it was
+easy to achieve with the <code>S3</code> class.</p>
+
+{% code 'php' %}
+$html = generate_html();
+$compression_level = 9;
+$html_gz = gzencode($html, $compression_level);
+$bucket = 'ald-jp-banners';
+$input = array('data'=>$html_gz, 'type'=>'text/html');
+$meta_headers = array();
+$request_headers = array('Content-Encoding'=>'gzip');
+
+$amazon->putObject($input, $bucket, 'index.html', S3::ACL_PUBLIC_READ,
+                   $meta_headers, $request_headers);
+{% endcode %}
+
+<p>By stripping white space and gzipping the html file the size went down 
+from 7.7 KB to 2.4 KB. When this file is requested around 400.000 times a day 
+this equals approximately 2 GB of traffic saved each day. With the pricing of Amazon
+S3 this equals $0.24 saved each day :)</p>
