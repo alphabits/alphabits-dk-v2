@@ -1,0 +1,170 @@
+<p>Every day I read other peoples code. It can be in an online forum, Github or when I am working on existing code base. Very often the code I see can be improved by some very simple principles. First of all don't repeat code. There is almost never a reason to repeat code. Another thing I often find increasing the code quality is to replace a bunch of if statements or a switch statement, with a dictionary with the data that changes between the various if statements.</p>
+
+<p>Last week I had to reimplement some functionality in javascript. In one place a function was called when an response was received from an ajax-request. Depending on the response, different texts should be shown and different colors should be used in the UI. The original function is shown next</p>
+
+{% code 'javascript' %}
+var onAjaxSuccess = function(data) {
+    if ( data == "Email address invalid" ) {
+        $('input#agentindtastemail').css('background-position',
+                                         '-9px -68px');
+        $('.searchbarAgentAUX #xmsg').html(data);
+        $('.searchbarAgentAUX #xmsg').animate({
+                "color":"#ffff", 
+                "backgroundColor":"#fec0c6"
+            }, 300).delay(1000).animate({
+                "color":"#d73f3f", 
+                "backgroundColor":"#ffffff"
+            }, 600);
+    } else if (data == "Email address exists") {
+        $('input#agentindtastemail').css('background-position',
+                                         '-9px -68px');
+        data = data + '&lt;br/&gt;&lt;span id="reminder">Click here&lt;/Span>' 
+                    + 'and we will send you a link to your account.';
+        $('.searchbarAgentAUX #xmsg').html(data);
+        $('.searchbarAgentAUX #xmsg').animate({
+                "color":"#ffff", 
+                "backgroundColor":"#fec0c6" 
+            }, 300).delay(1000).animate({
+                "color":"#666", 
+                "backgroundColor":"#ffffff"
+            }, 600);
+    } else if (data == "Choose at least two criterias") {
+        $('.searchbarAgentAUX #xmsg').html(data);
+        $('.searchbarAgentAUX #xmsg').animate({
+                "color":"#ffff", 
+                "backgroundColor":"#fec0c6"
+            }, 300).delay(1000).animate({
+                "color":"#d73f3f", 
+                "backgroundColor":"#ffffff"
+            }, 600);
+    } else if (data == "Ok") {
+        $('.searchbarAgentAUX #xmsg').html('Thank you!&lt;br/>Activate your ' 
+            + 'account by clicking the link in the email you receive.');
+        $('.searchbarAgentAUX #xmsg').animate({
+                "color":"#ffff", 
+                "backgroundColor":"#c0fed3"
+            }, 300).delay(1000).animate({
+                "color":"#666666", 
+                "backgroundColor":"#ffffff"
+            }, 600);
+    }
+};
+{% endcode %}
+
+<p>It is clear that a lot of repetition is present in the code. But at the same time there is enough differences between the diffferent cases, that it isn't 100% clear how to abstract the code. Actually this points to one advantage about trying to extract the data from the code. You really need to understand why the logic is as it is. For example, why should the background position be changed in two cases, and not in the two other cases? It turned out that the shift in background position revealed an alert icon, so the real logic is about showing an alert
+
+{% code 'javascript' %}
+var showAlert = function () {
+    $('input#agentindtastemail').css('background-position',
+                                     '-9px -68px');
+}; 
+
+var showMessage = function (message, startBackgroundColor, endTextColor) {
+    var $messageBox = $('#xmsg');
+
+    $messageBox.html(data);
+    $messageBox.animate({
+            "color": "#ffff", 
+            "backgroundColor": startBackgroundColor
+        }, 300).delay(1000).animate({
+            "color": endTextColor,
+            "backgroundColor": "#ffffff"
+        }, 600);
+}
+
+var onAjaxSuccess = function(data) {
+    if (data == "Email address invalid") {
+        showAlert();
+        showMessage(data, "#fec0c6", "#d73f3f");
+    } else if (data == "Email address exists") {
+        showAlert();
+        data = data + '&lt;br/&gt;&lt;span id="reminder">Click here&lt;/Span>' 
+                    + 'and we will send you a link to your account.';
+        showMessage(data, "#fec0c6", "#666");
+    } else if (data == "Choose at least two criterias") {
+        showMessage(data, "#fec0c6", "#d73f3f");
+    } else if (data == "Ok") {
+        message = 'Thank you!&lt;br/>Activate your ' 
+                    + 'account by clicking the link in '
+                    + 'the email you receive.'
+        showMessage(data, "#c0fed3", "#666");
+    }
+};
+{% endcode %}
+
+{% code 'javascript' %}
+var onAjaxSuccess = function(data) {
+    var message,
+        setup,
+        responseHandlingSetup = {
+            "Email address invalid": {
+                showAlert: true,
+                prependResponse: true,
+                textToAppend: "",
+                endTextColor: "#d73f3f",
+                startBackgroundColor: "#fec0c6"
+            },
+            "Email address exists": {
+                showAlert: true,
+                prependResponse: true,
+                textToAppend: '&lt;br/&gt;&lt;span id="reminder">'
+                              + 'Click here&lt;/Span> and we will send ' 
+                              + 'you a link to your account.',
+                endTextColor: "#666",
+                startBackgroundColor: "#fec0c6"
+            },
+            "Choose at least two criterias": {
+                showAlert: false,
+                prependResponse: true,
+                textToAppend: "",
+                endTextColor: "#d73f3f",
+                startBackgroundColor: "#fec0c6"
+            },
+            "Ok": {
+                showAlert: false,
+                prependResponse: false,
+                textToAppend: "Thank you!&lt;br/>Activate your " 
+                              + "account by clicking the link "
+                              + "in the email you receive.",
+                endTextColor: "#666",
+                startBackgroundColor: "#c0fed3"
+            }
+        };
+
+    if (!(data in responseHandlingSetup)) {
+        // Some error handling
+    }
+
+    setup = responseHandlingSetup[data];
+
+    if (setup.showAlert) {
+        showAlert();
+    }
+
+    message = (setup.prependResponse ? data : '') + setup.textToAppend;
+
+    showMessage(message, setup.startBackgroundColor, setup.endTextColor);
+};
+{% endcode %}
+
+{% code 'javascript' %}
+var onAjaxSuccess = function(data) {
+    var message,
+        setup,
+        responseHandlingSetup = getResponseHandlingSetup();
+
+    if (!(data in responseHandlingSetup)) {
+        // Some error handling
+    }
+
+    setup = responseHandlingSetup[data];
+
+    if (setup.showAlert) {
+        showAlert();
+    }
+
+    message = (setup.prependResponse ? data : '') + setup.textToAppend;
+    showMessage(message, setup.startBackgroundColor, setup.endTextColor);
+};
+{% endcode %}
+

@@ -1,23 +1,42 @@
 [
     {
+        "id": "the-dry-principle-and-accidental-repetition",
+        "title": "The DRY principle and accidental repetition",
+        "date": "2012-06-17",
+        "author": "Anders Hørsted",
+        "template": "the-dry-principle-and-accidental-repetitions.html",
+        "status": "draft"
+    },
+    {
+        "id": "extracting-the-structure-in-code",
+        "title": "Extracting the structure in code",
+        "date": "2012-06-17",
+        "author": "Anders Hørsted",
+        "template": "extracting-data.html",
+        "status": "draft"
+    },
+    {
         "id": "updating-amazon-s3-with-php",
         "title": "Updating Amazon S3 with PHP",
         "date": "2012-06-15",
         "author": "Anders Hørsted",
-        "template": "serving-html-from-amazon-s3.html"
+        "template": "serving-html-from-amazon-s3.html",
+        "status": "published"
     },
     {
         "id": "introduction-to-eigenvectors",
         "title": "A short introduction to eigenvectors",
         "date": "2011-05-26",
         "author": "Anders Hørsted",
-        "template": "short-note-on-eigenvectors.html"
+        "template": "short-note-on-eigenvectors.html",
+        "status": "published"
     },
     {
         "id": "approximating-the-normal-distribution",
         "title": "Approximating the normal distribution",
         "date": "2011-05-24",
         "author": "Anders Hørsted",
-        "template": "approximating-normal-distribution.html"
+        "template": "approximating-normal-distribution.html",
+        "status": "published"
     }
 ]

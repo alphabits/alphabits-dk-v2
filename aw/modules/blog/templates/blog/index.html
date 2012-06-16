@@ -1,11 +1,14 @@
 {#
 vim:filetype=htmljinja
 #}
+{%- import "_helpers.html" as h -%}
 {% extends 'layout.html' %}
 
 {% block content %}
 
 <h2>Blog</h2>
+
+{{ h.blog_pagination(pagination) }}
 
 {% for post in posts %}
 <article>
@@ -16,5 +19,7 @@ vim:filetype=htmljinja
     </div>
 </article>
 {% endfor %}
+
+{{ h.blog_pagination(pagination) }}
 
 {% endblock %}
