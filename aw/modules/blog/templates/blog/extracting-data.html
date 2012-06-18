@@ -1,6 +1,15 @@
-<p>Every day I read other peoples code. It can be in an online forum, Github or when I am working on existing code base. Very often the code I see can be improved by some very simple principles. First of all don't repeat code. There is almost never a reason to repeat code. Another thing I often find increasing the code quality is to replace a bunch of if statements or a switch statement, with a dictionary with the data that changes between the various if statements.</p>
+<p>Every day I read other peoples code. It can be in an online forum, Github or
+when I am working on existing code base. Very often the code I see can be
+improved by some very simple principles. The most important principle is to
+avoid repeating code. There is almost never a reason to repeat code. Another
+thing I often find increases the code quality is to replace a bunch of if
+statements or a switch statement, with a data structure that describes what
+changes between the various if statements.</p>
 
-<p>Last week I had to reimplement some functionality in javascript. In one place a function was called when an response was received from an ajax-request. Depending on the response, different texts should be shown and different colors should be used in the UI. The original function is shown next</p>
+<p>Last week I had to reimplement some functionality in javascript. In one
+place a function was called when a response was received from an ajax-request.
+Depending on the response, different texts should be shown and different colors
+should be used in the UI. The original function is shown here</p>
 
 {% code 'javascript' %}
 var onAjaxSuccess = function(data) {
@@ -51,7 +60,15 @@ var onAjaxSuccess = function(data) {
 };
 {% endcode %}
 
-<p>It is clear that a lot of repetition is present in the code. But at the same time there is enough differences between the diffferent cases, that it isn't 100% clear how to abstract the code. Actually this points to one advantage about trying to extract the data from the code. You really need to understand why the logic is as it is. For example, why should the background position be changed in two cases, and not in the two other cases? It turned out that the shift in background position revealed an alert icon, so the real logic is about showing an alert
+<p>A lot of repetition is present in the code, and it is in general not very
+readable. To avoid the repetition a couple of functions can be defined. To
+create some meaningful functions the intent of the code needs to be determined.
+For example why is the background position changed for two of the cases? After
+some searching in the rest of the codebase it turns out that the background
+position is changed to show an alert icon. The rest of the code in the four
+if-statements are all basically the same, and all shows a message in a box. Two
+functions <code>showAlert</code> and <code>showMessage</code> are therefore
+defined. The refactored code is shown next.</p>
 
 {% code 'javascript' %}
 var showAlert = function () {
@@ -62,7 +79,7 @@ var showAlert = function () {
 var showMessage = function (message, startBackgroundColor, endTextColor) {
     var $messageBox = $('#xmsg');
 
-    $messageBox.html(data);
+    $messageBox.html(message);
     $messageBox.animate({
             "color": "#ffff", 
             "backgroundColor": startBackgroundColor
@@ -72,99 +89,119 @@ var showMessage = function (message, startBackgroundColor, endTextColor) {
         }, 600);
 }
 
-var onAjaxSuccess = function(data) {
-    if (data == "Email address invalid") {
+var onAjaxSuccess = function(response) {
+    var message;
+
+    if (response == "Email address invalid") {
         showAlert();
-        showMessage(data, "#fec0c6", "#d73f3f");
-    } else if (data == "Email address exists") {
+        showMessage(response, "#fec0c6", "#d73f3f");
+    } else if (response == "Email address exists") {
         showAlert();
-        data = data + '&lt;br/&gt;&lt;span id="reminder">Click here&lt;/Span>' 
+        message = response + '&lt;br/&gt;&lt;span id="reminder">Click here&lt;/Span>' 
                     + 'and we will send you a link to your account.';
-        showMessage(data, "#fec0c6", "#666");
-    } else if (data == "Choose at least two criterias") {
-        showMessage(data, "#fec0c6", "#d73f3f");
-    } else if (data == "Ok") {
+        showMessage(message, "#fec0c6", "#666");
+    } else if (response == "Choose at least two criterias") {
+        showMessage(response, "#fec0c6", "#d73f3f");
+    } else if (response == "Ok") {
         message = 'Thank you!&lt;br/>Activate your ' 
                     + 'account by clicking the link in '
                     + 'the email you receive.'
-        showMessage(data, "#c0fed3", "#666");
+        showMessage(message, "#c0fed3", "#666");
     }
 };
 {% endcode %}
 
+<p>This code is way more readable, and the intent of the code is clearer since
+the function names explains what should happen. This shows that functions are
+not only good to avoid repeating code, but also to hide implementation details
+and create "self-documenting" code.</p>
+
+<p>Even though a lot of implementation details have been hidden by the two
+functions, the four if-statements still handles too many implementation
+details, like what color the box should have, and what message should be shown.
+Something I often do when confronted with a couple of if-statements is to
+describe the differences between the if-statements in a data structure. This
+approach is shown next.</p> 
+
 {% code 'javascript' %}
-var onAjaxSuccess = function(data) {
-    var message,
-        setup,
+var onAjaxSuccess = function(response) {
+    var setup,
         responseHandlingSetup = {
             "Email address invalid": {
                 showAlert: true,
-                prependResponse: true,
-                textToAppend: "",
+                message: "Email address invalid",
                 endTextColor: "#d73f3f",
                 startBackgroundColor: "#fec0c6"
             },
             "Email address exists": {
                 showAlert: true,
-                prependResponse: true,
-                textToAppend: '&lt;br/&gt;&lt;span id="reminder">'
-                              + 'Click here&lt;/Span> and we will send ' 
-                              + 'you a link to your account.',
+                message: 'Email address exists. '
+                         + '&lt;br/&gt;&lt;span id="reminder">'
+                         + 'Click here&lt;/Span> and we will send ' 
+                         + 'you a link to your account.',
                 endTextColor: "#666",
                 startBackgroundColor: "#fec0c6"
             },
             "Choose at least two criterias": {
                 showAlert: false,
-                prependResponse: true,
-                textToAppend: "",
+                message: "Choose at least two criterias",
                 endTextColor: "#d73f3f",
                 startBackgroundColor: "#fec0c6"
             },
             "Ok": {
                 showAlert: false,
-                prependResponse: false,
-                textToAppend: "Thank you!&lt;br/>Activate your " 
-                              + "account by clicking the link "
-                              + "in the email you receive.",
+                message: "Thank you!&lt;br/>Activate your " 
+                         + "account by clicking the link "
+                         + "in the email you receive.",
                 endTextColor: "#666",
                 startBackgroundColor: "#c0fed3"
             }
         };
 
-    if (!(data in responseHandlingSetup)) {
+    if (!(response in responseHandlingSetup)) {
         // Some error handling
     }
 
-    setup = responseHandlingSetup[data];
+    setup = responseHandlingSetup[response];
 
     if (setup.showAlert) {
         showAlert();
     }
 
-    message = (setup.prependResponse ? data : '') + setup.textToAppend;
-
-    showMessage(message, setup.startBackgroundColor, setup.endTextColor);
+    showMessage(setup.message, setup.startBackgroundColor, 
+                setup.endTextColor);
 };
 {% endcode %}
 
+<p>This version of the function is longer than the previous, but notice how all
+implementation details are kept in the dictionary
+<code>responseHandlingSetup</code>, and only the core logic is left in the
+function body. This shows how simple the function really is. First we check
+that the ajax response is one of the legal responses. Then we check whether an
+alert should be shown or not. And finally we display the message. All details
+about what color the box is, and the precise wording of the message is kept in
+a data structure. Typically this data structure will be kept in a config file
+and somehow be accesible inside the function. This leave only the core logic,
+and finally gives a readable function, that is only concerned about doing was
+is necessary when an ajax response is received.</p>
+
 {% code 'javascript' %}
-var onAjaxSuccess = function(data) {
-    var message,
-        setup,
+var onAjaxSuccess = function(response) {
+    var setup,
         responseHandlingSetup = getResponseHandlingSetup();
 
-    if (!(data in responseHandlingSetup)) {
+    if (!(response in responseHandlingSetup)) {
         // Some error handling
     }
 
-    setup = responseHandlingSetup[data];
+    setup = responseHandlingSetup[response];
 
     if (setup.showAlert) {
         showAlert();
     }
 
-    message = (setup.prependResponse ? data : '') + setup.textToAppend;
-    showMessage(message, setup.startBackgroundColor, setup.endTextColor);
+    showMessage(setup.message, setup.startBackgroundColor, 
+                setup.endTextColor);
 };
 {% endcode %}
 

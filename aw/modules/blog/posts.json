@@ -5,15 +5,17 @@
         "date": "2012-06-17",
         "author": "Anders Hørsted",
         "template": "the-dry-principle-and-accidental-repetitions.html",
-        "status": "draft"
+        "status": "draft",
+        "tags": ["programming", "patterns", "dry-principle"]
     },
     {
         "id": "extracting-the-structure-in-code",
-        "title": "Extracting the structure in code",
+        "title": "Keeping code DRY and readable",
         "date": "2012-06-17",
         "author": "Anders Hørsted",
         "template": "extracting-data.html",
-        "status": "draft"
+        "status": "published",
+        "tags": ["programming", "patterns", "abstraction"]
     },
     {
         "id": "updating-amazon-s3-with-php",
@@ -21,7 +23,8 @@
         "date": "2012-06-15",
         "author": "Anders Hørsted",
         "template": "serving-html-from-amazon-s3.html",
-        "status": "published"
+        "status": "published",
+        "tags": ["programming", "php", "amazon-s3"]
     },
     {
         "id": "introduction-to-eigenvectors",
@@ -29,7 +32,8 @@
         "date": "2011-05-26",
         "author": "Anders Hørsted",
         "template": "short-note-on-eigenvectors.html",
-        "status": "published"
+        "status": "published",
+        "tags": ["math", "linear-algebra", "eigenvectors"]
     },
     {
         "id": "approximating-the-normal-distribution",
@@ -37,6 +41,7 @@
         "date": "2011-05-24",
         "author": "Anders Hørsted",
         "template": "approximating-normal-distribution.html",
-        "status": "published"
+        "status": "published",
+        "tags": ["math", "normal-distribution", "approximation", "infinte-series"]
     }
 ]
