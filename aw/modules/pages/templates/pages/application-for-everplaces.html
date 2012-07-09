@@ -1,0 +1,18 @@
+{%- import "_helpers.html" as h -%}
+{% extends "layout.html" %}
+
+{% block content %}
+    <h2>Application for Student Python Developer position at Everplaces</h2>
+    A short text
+    <h3>Resume</h3>
+    <ul>
+        {% for item in resume %}
+        <li>
+        <em>{{ item.period }}</em> &bullet; {{ item.title }}<br/>
+        {{ item.body }}
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+
