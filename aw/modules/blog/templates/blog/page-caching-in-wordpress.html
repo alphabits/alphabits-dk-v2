@@ -1,0 +1,63 @@
+<p>As part of ...</p>
+{% code 'php' %}
+// In a plugin or theme file add these functions
+
+function aw_handle_page_caching() {
+    // Maybe only test if is_admin()
+    if (!aw_is_cache_request() && !is_user_logged_in()) {
+        aw_cache_page();
+    }
+}
+
+function aw_cache_page() {
+    global $wp;
+
+    $current_url = home_url($wp->request);
+    $response = wp_remote_get($current_url);
+    if ((int)$response['response']['code'] === 200) {
+        $cache_key = str_replace("/", "-", $wp->request);
+        aw_save_page_cache($cache_key, $response['body']);
+    }
+}
+
+function aw_save_page_cache($key, $content) {
+    $file_path = sprintf("%spagecache/%s.html", ABSPATH, $key);
+    file_put_contents($file_path, $content);
+}
+
+function aw_is_cache_request() {
+    return (isset($_GET['cache-request']) && 
+            $_GET['cache-request'] === 'on');
+}
+{% endcode %}
+<p>
+    Then in the post and page templates that render pages that should be cached, just call <tt>aw_handle_page_caching</tt>
+</p>
+{% code 'php' %}
+aw_handle_page_caching();
+
+get_header();
+
+// Rest of the page/post template
+{% endcode %}
+To glue the pieces together apache needs to be setup to serve the cached pages, if they exists.
+{% code 'apache' %}
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{HTTP:Accept-Encoding} gzip
+    RewriteRule .* - [E=W3TC_ENC:_gzip]
+    #RewriteCond %{HTTP_COOKIE} !(comment_author|wp\-postpass|wordpress_\[a\-f0\-9\]\+|wordpress_logged_in) [NC]
+    RewriteCond %{QUERY_STRING} !^cache=xcfv$
+    RewriteCond %{REQUEST_URI} ^/(.*)/$
+    RewriteCond "%{DOCUMENT_ROOT}/pagecache/%1.html" -f
+    RewriteRule .* "/pagecache/%1.html" [L]
+    RewriteRule ^index\.php$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.php [L]
+</IfModule>
+{% endcode %}
+{% code 'html' %}
+<h1>Anders</h1>
+{% endcode %}

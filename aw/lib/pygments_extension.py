@@ -50,7 +50,7 @@ class PygmentsExtension(Extension):
     def _pygmentize(self, lang_type, caller):
         lexer = None
         formatter = HtmlFormatter(linenos=False)
-        content = caller()
+        content = str(caller())
         
         if lang_type is None:
             lexer = guess_lexer(content)
@@ -59,4 +59,4 @@ class PygmentsExtension(Extension):
         else:
             lexer = get_lexer_by_name(lang_type)
         
-        return Markup(highlight(content, lexer, formatter)).unescape()
+        return highlight(content, lexer, formatter)

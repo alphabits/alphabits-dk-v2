@@ -1,5 +1,14 @@
 [
     {
+        "id": "page-caching-in-wordpress",
+        "title": "Page caching in Wordpress",
+        "date": "2012-08-07",
+        "author": "Anders Hørsted",
+        "template": "page-caching-in-wordpress.html",
+        "status": "draft",
+        "tags": ["programming", "caching", "wordpress"]
+    },
+    {
         "id": "the-dry-principle-and-accidental-repetition",
         "title": "The DRY principle and accidental repetition",
         "date": "2012-06-17",
