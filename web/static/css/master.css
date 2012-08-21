@@ -183,3 +183,16 @@ span.error {
 .contact-form {
     margin-top: 20px;
 }
+
+.pagination {
+    padding-bottom: 10px;
+    overflow: hidden;
+}
+
+.pagination .newer {
+    float: right;
+}
+
+.pagination .older {
+    float: left;
+}

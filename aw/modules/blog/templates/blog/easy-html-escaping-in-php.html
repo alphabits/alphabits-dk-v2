@@ -1,0 +1,80 @@
+<p>
+To avoid problems with unintended scripts getting included on our webpages, it is important to escape html tags from all user input we are outputting in our html. <br/>
+Let's say we have a model of a car
+{% code 'php' %}
+class Car
+{
+    public
+        $manufacturer,
+        $model,
+        $modelvariant,
+        $build_year,
+        $gastype,
+        /* ...etc... */
+        $engine;
+
+    public function get_title() {
+        return join(" ", array(
+            $this->manufacturer,
+            $this->model,
+            $this->modelvariant
+        ));
+    }
+
+    /* ...etc... */
+}
+{% endcode %}
+Forgetting about html escaping for a minute a template for the car could be
+{% code 'html' %}
+<h2><?=$car->get_title()?></h2>
+<p>Build year: <?=$car->build_year?></p>
+<!-- ...etc... -->
+{% endcode %}
+If the car data is in any way created from user input, we need to html escape all car properties that are output in the template. Wordpress comes with a function for html escaping <code>esc_html</code>, so a proper template would then be
+{% code 'html' %}
+<h2><?=esc_html($car->get_title())?></h2>
+<p>Build year: <?=esc_html($car->build_year)?></p>
+<!-- ...etc... -->
+{% endcode %}
+If a lot of car properties are output, this becomes a bit tedious and the chances are high that somewhere we forget to escape a property. Fortunately there are many ways to handle this problem. <br />
+One way to go about it, is to create a new object type to handle the escaping of model properties and method output.
+{% code 'php' %}
+class EscapedModel
+{
+    private
+        $model;
+
+    public function __construct($model) {
+        $this->model = $model;
+    }
+        
+    public function __get($name) {
+        return esc_html($this->model->$name);
+    }
+
+    public function __call($name, $arguments) {
+        return esc_html($this->model->$name());
+    }
+}
+{% endcode %}
+Then somewhere in the controller we can write
+{% code 'php' %}
+$car = new EscapedModel($car);
+{% endcode %}
+And then we can use the first version of the template, and still get properly escaped output. There are a few obvious disadvantages with this approach. <br/>
+First of all, it is a bit annoying to write the above line in the controller. It can be made a little prettier, by including this function in the <code>Car</code> class
+{% code 'php' %}
+public function get_escaped() {
+    if (!isset($this->_escaped)) {
+        $this->_escaped = new EscapedModel($this);
+    }
+    return $this->_escaped;
+}
+{% endcode %}
+The controller then becomes a tiny bit prettier
+{% code 'php' %}
+$car = $car->get_escaped();
+{% endcode %}
+and at the same time we are guarenteed that only one <code>EscapedModel</code> instance is created for each <code>Car</code> instance. Talking about the number of extra instances created leads to the next disadvantage. <br/>
+If we need to output a large number a cars (in a list for example), then the fact that we are creating twice as many objects, could lead to performance problems. Also the fact that every time an escaped property is output, a magic method is called, could probably also lead to performance problems. <br/>
+Whether these performance issues are justified or a case of premature optimization, can only be determined in the specific use case. I have used this technique once without any performance problems, but your situation may differ.

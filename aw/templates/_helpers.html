@@ -32,11 +32,11 @@ I prefer to create {{ get_link('pages.show_page', 'simple solutions', page='solu
 <div class="pagination">
 
 {%- if not pagination.current_page_is_first -%}
-<div class="prev"><a href="{{ url_for('blog.index', page_num=(pagination.current_page-1), **request.args) }}">Newer blog posts</a></div>
+<div class="newer"><a href="{{ url_for('blog.index', page_num=(pagination.current_page-1), **request.args) }}">Newer blog posts &#187;</a></div>
 {%- endif -%}
 
 {%- if not pagination.current_page_is_last -%}
-<div class="prev"><a href="{{ url_for('blog.index', page_num=(pagination.current_page+1), **request.args) }}">Older blog posts</a></div>
+<div class="older"><a href="{{ url_for('blog.index', page_num=(pagination.current_page+1), **request.args) }}">&#171; Older blog posts</a></div>
 {%- endif -%}
 
 </div>

@@ -1,12 +1,21 @@
 [
     {
+        "id": "easy-html-escaping-in-php",
+        "title": "Easy (stupid?) html escaping in PHP",
+        "date": "2012-08-21",
+        "author": "Anders Hørsted",
+        "template": "easy-html-escaping-in-php.html",
+        "status": "published",
+        "tags": ["programming", "html-escaping", "php"]
+    },
+    {
         "id": "page-caching-in-wordpress",
         "title": "Page caching in Wordpress",
         "date": "2012-08-07",
         "author": "Anders Hørsted",
         "template": "page-caching-in-wordpress.html",
         "status": "draft",
-        "tags": ["programming", "caching", "wordpress"]
+        "tags": ["programming", "caching", "wordpress", "php"]
     },
     {
         "id": "the-dry-principle-and-accidental-repetition",
